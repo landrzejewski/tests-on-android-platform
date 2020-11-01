@@ -3,7 +3,6 @@ package pl.training.goodweather.forecast
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
-import pl.training.goodweather.common.Logger
 import pl.training.goodweather.configuration.ApplicationDatabase
 import pl.training.goodweather.forecast.model.WeatherInteractor
 import pl.training.goodweather.forecast.model.api.WeatherProvider
@@ -11,8 +10,6 @@ import pl.training.goodweather.forecast.model.database.InMemoryWeatherRepository
 import pl.training.goodweather.forecast.model.database.RoomWeatherRepository
 import pl.training.goodweather.forecast.model.database.WeatherDao
 import pl.training.goodweather.forecast.model.database.WeatherRepository
-import pl.training.goodweather.forecast.presenter.ForecastDetailsPresenter
-import pl.training.goodweather.forecast.presenter.ForecastPresenter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -49,13 +46,5 @@ class ForecastModule {
     @Singleton
     @Provides
     fun weatherInteractor(weatherProvider: WeatherProvider, @Named("inMemoryRepository") weatherRepository: WeatherRepository) = WeatherInteractor(weatherProvider, weatherRepository)
-
-    @Singleton
-    @Provides
-    fun forecastPresenter(weatherInteractor: WeatherInteractor, logger: Logger): ForecastPresenter = ForecastPresenter(weatherInteractor, logger)
-
-    @Singleton
-    @Provides
-    fun forecastDetailsPresenter(weatherInteractor: WeatherInteractor, logger: Logger): ForecastDetailsPresenter = ForecastDetailsPresenter(weatherInteractor, logger)
 
 }
