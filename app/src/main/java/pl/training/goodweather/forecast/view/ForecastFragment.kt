@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,18 +12,28 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import pl.training.goodweather.R
-import pl.training.goodweather.configuration.Container
+import pl.training.goodweather.WeatherApplication.Companion.applicationGraph
+import pl.training.goodweather.common.Logger
+import pl.training.goodweather.forecast.model.WeatherInteractor
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlinx.android.synthetic.main.fragment_forecast.city_name as cityName
 import kotlinx.android.synthetic.main.fragment_forecast.forecast_list as forecastList
 
 class ForecastFragment : Fragment() {
 
     private val disposableBag = CompositeDisposable()
-    private val weatherInteractor = Container.getWeatherInteractor()
-    private val logger = Container.getLogger()
+
+    @Inject
+    lateinit var weatherInteractor: WeatherInteractor
+    @Inject
+    lateinit var logger: Logger
 
     private val forecastListAdapter = ForecastListAdapter(emptyList()) { showForecastDetails() }
+
+    init {
+        applicationGraph.inject(this)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_forecast, container, false)
@@ -57,7 +66,7 @@ class ForecastFragment : Fragment() {
     }
 
     private fun showForecastDetails() {
-        findNavController().navigate(R.id.action_show_forecast_details, bundleOf("cityName" to cityName.text.toString()))
+        findNavController().navigate(R.id.action_show_forecast_details)
     }
 
     override fun onDestroyView() {
