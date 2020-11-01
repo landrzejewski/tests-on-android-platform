@@ -1,20 +1,23 @@
 package pl.training.movies;
 
-class Rental {
+import lombok.Value;
 
-    private Movie _movie;
-    private int _daysRented;
+import java.time.LocalDate;
 
-    public Rental(Movie movie, int daysRented) {
-        _movie = movie;
-        _daysRented = daysRented;
+import static java.time.temporal.ChronoUnit.DAYS;
+
+@Value
+public class Rental {
+
+    MovieType type;
+    LocalDate startDate;
+
+    public boolean isNewRelease() {
+        return type == MovieType.NEW_RELEASE;
     }
 
-    public int getDaysRented() {
-        return _daysRented;
+    public long periodInDays() {
+        return DAYS.between(LocalDate.now(), startDate);
     }
 
-    public Movie getMovie() {
-        return _movie;
-    }
 }
