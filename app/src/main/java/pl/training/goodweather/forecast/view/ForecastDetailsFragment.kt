@@ -6,25 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
 import pl.training.goodweather.R
 import pl.training.goodweather.WeatherApplication.Companion.applicationGraph
-import pl.training.goodweather.common.Logger
-import pl.training.goodweather.forecast.model.WeatherInteractor
+import pl.training.goodweather.forecast.model.Weather
+import pl.training.goodweather.forecast.presenter.ForecastDetailsPresenter
 import javax.inject.Inject
 import kotlinx.android.synthetic.main.fragment_forecast_details.back_button as backButton
 import kotlinx.android.synthetic.main.fragment_forecast_details.weather_description as weatherDescription
 
-class ForecastDetailsFragment : Fragment() {
+class ForecastDetailsFragment : Fragment(), ForecastDetailsView {
 
     private val disposableBag = CompositeDisposable()
 
     @Inject
-    lateinit var weatherInteractor: WeatherInteractor
-    @Inject
-    lateinit var logger: Logger
+    lateinit var forecastDetailsPresenter: ForecastDetailsPresenter
 
     init {
         applicationGraph.inject(this)
@@ -36,24 +32,32 @@ class ForecastDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        applicationGraph.inject(this)
+        forecastDetailsPresenter.attachView(this)
         initViews()
         bindViews()
     }
 
     private fun initViews() {
-        weatherInteractor.getWeather()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ weatherDescription.text = it.cityName }) { logger.log(it.toString()) }
-            .addTo(disposableBag)
+        arguments?.getString("cityName")?.let { forecastDetailsPresenter.onCityChanged(it) }
     }
 
     private fun bindViews() {
-        backButton.setOnClickListener { findNavController().navigate(R.id.action_show_forecast) }
+        backButton.setOnClickListener { forecastDetailsPresenter.onClose() }
+    }
+
+    override fun showForecastDetails(weather: Weather) {
+        weatherDescription.text = weather.cityName
+    }
+
+    override fun showForecast() {
+        findNavController().navigate(R.id.action_show_forecast)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         disposableBag.clear()
+        forecastDetailsPresenter.detachView()
     }
 
 }

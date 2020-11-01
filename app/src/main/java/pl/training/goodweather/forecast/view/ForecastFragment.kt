@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,22 +15,23 @@ import io.reactivex.rxkotlin.addTo
 import pl.training.goodweather.R
 import pl.training.goodweather.WeatherApplication.Companion.applicationGraph
 import pl.training.goodweather.common.Logger
-import pl.training.goodweather.forecast.model.WeatherInteractor
+import pl.training.goodweather.forecast.model.Forecast
+import pl.training.goodweather.forecast.presenter.ForecastPresenter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlinx.android.synthetic.main.fragment_forecast.city_name as cityName
 import kotlinx.android.synthetic.main.fragment_forecast.forecast_list as forecastList
 
-class ForecastFragment : Fragment() {
+class ForecastFragment : Fragment(), ForecastView {
 
     private val disposableBag = CompositeDisposable()
 
     @Inject
-    lateinit var weatherInteractor: WeatherInteractor
+    lateinit var forecastPresenter: ForecastPresenter
     @Inject
     lateinit var logger: Logger
 
-    private val forecastListAdapter = ForecastListAdapter(emptyList()) { showForecastDetails() }
+    private val forecastListAdapter = ForecastListAdapter(emptyList())
 
     init {
         applicationGraph.inject(this)
@@ -41,11 +43,13 @@ class ForecastFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        forecastPresenter.attachView(this)
         initViews()
         bindViews()
     }
 
     private fun initViews() {
+        forecastListAdapter.forecastTapListener = { forecastPresenter.onForecastSelected() }
         forecastList.layoutManager = LinearLayoutManager(activity)
         forecastList.adapter = forecastListAdapter
     }
@@ -56,22 +60,26 @@ class ForecastFragment : Fragment() {
             .filter { it.isNotEmpty() }
             .debounce(500, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(weatherInteractor::refreshWeather) { logger.log(it.toString()) }
-            .addTo(disposableBag)
-        weatherInteractor.getWeather()
-            .map { it.forecast }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(forecastListAdapter::update) { logger.log(it.toString()) }
+            .subscribe(forecastPresenter::onCityChanged) { logger.log(it.toString()) }
             .addTo(disposableBag)
     }
 
-    private fun showForecastDetails() {
-        findNavController().navigate(R.id.action_show_forecast_details)
+    override fun showCityName(cityName: String) {
+        this.cityName.setText(cityName)
+    }
+
+    override fun showForecast(forecast: List<Forecast>) {
+       forecastListAdapter.update(forecast)
+    }
+
+    override fun showForecastDetails(cityName: String) {
+        findNavController().navigate(R.id.action_show_forecast_details, bundleOf("cityName" to cityName))
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         disposableBag.clear()
+        forecastPresenter.detachView()
     }
 
 }
