@@ -9,11 +9,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jakewharton.rxbinding2.widget.textChanges
+import dagger.hilt.android.scopes.FragmentScoped
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import pl.training.goodweather.R
-import pl.training.goodweather.WeatherApplication.Companion.applicationGraph
 import pl.training.goodweather.common.Logger
 import pl.training.goodweather.forecast.viewmodel.ForecastViewModel
 import java.util.concurrent.TimeUnit
@@ -21,6 +21,7 @@ import javax.inject.Inject
 import kotlinx.android.synthetic.main.fragment_forecast.city_name as cityName
 import kotlinx.android.synthetic.main.fragment_forecast.forecast_list as forecastList
 
+@FragmentScoped
 class ForecastFragment : Fragment() {
 
     private val disposableBag = CompositeDisposable()
@@ -30,10 +31,6 @@ class ForecastFragment : Fragment() {
     lateinit var logger: Logger
 
     private val forecastListAdapter = ForecastListAdapter(emptyList())
-
-    init {
-        applicationGraph.inject(this)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_forecast, container, false)

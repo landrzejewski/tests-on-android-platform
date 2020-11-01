@@ -1,40 +1,25 @@
 package pl.training.goodweather.forecast.viewmodel
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import pl.training.goodweather.WeatherApplication.Companion.applicationGraph
 import pl.training.goodweather.common.Logger
 import pl.training.goodweather.forecast.model.Weather
 import pl.training.goodweather.forecast.model.WeatherInteractor
-import javax.inject.Inject
 
-class ForecastViewModel : ViewModel() {
+@ActivityRetainedScoped
+class ForecastViewModel @ViewModelInject constructor(private val weatherInteractor: WeatherInteractor, private val logger: Logger) : ViewModel() {
 
     private val disposableBag = CompositeDisposable()
     private val lastWeather = MutableLiveData<Weather>()
 
     private var lastNameCityName = ""
 
-    //private lateinit var  weatherInteractor: WeatherInteractor
-    @Inject
-    lateinit var  weatherInteractor: WeatherInteractor
-    @Inject
-    lateinit var  logger: Logger
-
-    init {
-        applicationGraph.inject(this)
-    }
-
-    //    @Inject
-    //    fun setWeatherInteractor(weatherInteractor: WeatherInteractor) {
-    //        this.weatherInteractor = weatherInteractor
-    //    }
-
     fun refreshWeather(cityName: String) {
-        // LiveDataReactiveStreams.fromPublisher()
         if (cityName == lastNameCityName) { return }
         weatherInteractor.getWeather(cityName)
             .subscribe(this::onWeatherRefreshed) { logger.log(it.toString()) }

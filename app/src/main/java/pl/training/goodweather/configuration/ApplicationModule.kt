@@ -1,10 +1,12 @@
 package pl.training.goodweather.configuration
 
-import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import pl.training.goodweather.common.AndroidLogger
@@ -12,11 +14,8 @@ import pl.training.goodweather.common.Logger
 import javax.inject.Singleton
 
 @Module
-class ApplicationModule(private val application: Application) {
-
-    @Singleton
-    @Provides
-    fun context(): Context = application
+@InstallIn(ApplicationComponent::class)
+class ApplicationModule {
 
     @Singleton
     @Provides
@@ -34,7 +33,7 @@ class ApplicationModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun database(context: Context): ApplicationDatabase = Room.databaseBuilder(context, ApplicationDatabase::class.java, "database")
+    fun database(@ApplicationContext context: Context): ApplicationDatabase = Room.databaseBuilder(context, ApplicationDatabase::class.java, "database")
             .fallbackToDestructiveMigration()
             .build()
 

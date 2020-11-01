@@ -2,11 +2,15 @@ package pl.training.goodweather.forecast.model
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import pl.training.goodweather.forecast.RoomRepository
 import pl.training.goodweather.forecast.model.api.ApiMappers.toDomainModel
 import pl.training.goodweather.forecast.model.api.WeatherProvider
 import pl.training.goodweather.forecast.model.database.WeatherRepository
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class WeatherInteractor(private val weatherProvider: WeatherProvider, private val weatherRepository: WeatherRepository) {
+@Singleton
+class WeatherInteractor @Inject constructor(private val weatherProvider: WeatherProvider, @RoomRepository private val weatherRepository: WeatherRepository) {
 
     fun getWeather(cityName: String): Observable<Weather> {
         val cachedWeather = weatherRepository.findByCityName(cityName)
