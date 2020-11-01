@@ -1,4 +1,4 @@
-package pl.training.goodweather
+package pl.training.goodweather.forecast.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,10 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import pl.training.goodweather.R
+import pl.training.goodweather.configuration.Container
 import kotlinx.android.synthetic.main.fragment_forecast_details.back_button as backButton
 import kotlinx.android.synthetic.main.fragment_forecast_details.weather_description as weatherDescription
 
 class ForecastDetailsFragment : Fragment() {
+
+    private val disposableBag = CompositeDisposable()
+    private val weatherInteractor = Container.getWeatherInteractor()
+    private val logger = Container.getLogger()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_forecast_details, container, false)
@@ -22,11 +31,20 @@ class ForecastDetailsFragment : Fragment() {
     }
 
     private fun initViews() {
-        weatherDescription.text = arguments?.getString("cityName")
+        weatherInteractor.getWeather()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ weatherDescription.text = it.cityName }) { logger.log(it.toString()) }
+            .addTo(disposableBag)
+
     }
 
     private fun bindViews() {
         backButton.setOnClickListener { findNavController().navigate(R.id.action_show_forecast) }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        disposableBag.clear()
     }
 
 }

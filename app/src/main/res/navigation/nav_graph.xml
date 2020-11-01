@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/ForecastFragment"
-        android:name="pl.training.goodweather.ForecastFragment"
+        android:name="pl.training.goodweather.forecast.view.ForecastFragment"
         android:label="@string/forecast_fragment_label"
         tools:layout="@layout/fragment_forecast">
 
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/ForecastDetailsFragment"
-        android:name="pl.training.goodweather.ForecastDetailsFragment"
+        android:name="pl.training.goodweather.forecast.view.ForecastDetailsFragment"
         android:label="@string/forecast_details_fragment_label"
         tools:layout="@layout/fragment_forecast_details">
 
