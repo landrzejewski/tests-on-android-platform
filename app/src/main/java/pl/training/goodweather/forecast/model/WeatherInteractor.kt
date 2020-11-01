@@ -1,8 +1,10 @@
 package pl.training.goodweather.forecast.model
 
-import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import pl.training.goodweather.forecast.RoomRepository
+import kotlinx.coroutines.rx2.await
+import pl.training.goodweather.common.Response
+import pl.training.goodweather.common.Response.Failure
+import pl.training.goodweather.common.Response.Success
 import pl.training.goodweather.forecast.model.api.ApiMappers.toDomainModel
 import pl.training.goodweather.forecast.model.api.WeatherProvider
 import pl.training.goodweather.forecast.model.database.WeatherRepository
@@ -10,17 +12,23 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WeatherInteractor @Inject constructor(private val weatherProvider: WeatherProvider, @RoomRepository private val weatherRepository: WeatherRepository) {
+class WeatherInteractor @Inject constructor(
+    private val weatherProvider: WeatherProvider,
+    private val weatherRepository: WeatherRepository
+) {
 
-    fun getWeather(cityName: String): Observable<Weather> {
+    suspend fun getWeather(cityName: String): Response<Weather, WeatherGetException> = try {
         val cachedWeather = weatherRepository.findByCityName(cityName)
-            .toObservable()
         val refreshedWeather = weatherProvider.getWeather(cityName)
             .map { toDomainModel(it) }
-            .toObservable()
-            .flatMap { weatherRepository.add(it).toObservable() }
-        return Observable.concat(cachedWeather, refreshedWeather)
             .subscribeOn(Schedulers.io())
+            .await()
+        //   weatherRepository.add(refreshedWeather)
+        Success(refreshedWeather)
+    } catch (e: Exception) {
+        Failure(WeatherGetException())
     }
 
 }
+
+class WeatherGetException

@@ -7,16 +7,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import pl.training.goodweather.R
-import pl.training.goodweather.forecast.model.Forecast
 import pl.training.goodweather.common.Mappers
+import pl.training.goodweather.forecast.model.Forecast
 import kotlinx.android.synthetic.main.item_forecast.view.forecast_date as forecastDate
 import kotlinx.android.synthetic.main.item_forecast.view.forecast_description as forecastDescription
 import kotlinx.android.synthetic.main.item_forecast.view.forecast_icon as forecastIcon
 import kotlinx.android.synthetic.main.item_forecast.view.forecast_max_temp as forecastMaxTemp
 import kotlinx.android.synthetic.main.item_forecast.view.forecast_min_temp as forecastMinTemp
 
-class ForecastListAdapter(private var forecastList: List<Forecast>, var forecastTapListener: (Forecast) -> Unit = {})
-    : RecyclerView.Adapter<ForecastListAdapter.ViewHolder>() {
+class ForecastListAdapter(
+    private var forecastList: List<Forecast>,
+    var forecastTapListener: (Forecast) -> Unit = {}
+) : RecyclerView.Adapter<ForecastListAdapter.ViewHolder>() {
 
     private var context: Context? = null
 
@@ -37,7 +39,10 @@ class ForecastListAdapter(private var forecastList: List<Forecast>, var forecast
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(private val view: View, private val forecastTapListener: (Forecast) -> Unit) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(
+        private val view: View,
+        private val forecastTapListener: (Forecast) -> Unit
+    ) : RecyclerView.ViewHolder(view) {
 
         fun bindView(forecast: Forecast) = with(forecast) {
             view.setOnClickListener { forecastTapListener(this) }

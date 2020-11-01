@@ -9,6 +9,20 @@ import androidx.room.Relation
 data class CityDb(@PrimaryKey val id: Long, var name: String)
 
 @Entity
-data class ForecastDb(@PrimaryKey(autoGenerate = true) var id: Long?, val date: Long, val description: String,  val minTemperature: Int, val maxTemperature: Int, val iconUrl: String, val cityId: Long)
+data class ForecastDb(
+    @PrimaryKey(autoGenerate = true) var id: Long?,
+    val date: Long,
+    val description: String,
+    val minTemperature: Int,
+    val maxTemperature: Int,
+    val iconUrl: String,
+    val cityId: Long
+)
 
-data class WeatherDb(@Embedded val city: CityDb, @Relation(parentColumn = "id", entityColumn = "cityId") val forecast: List<ForecastDb>)
+data class WeatherDb(
+    @Embedded val city: CityDb,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "cityId"
+    ) val forecast: List<ForecastDb>
+)

@@ -33,7 +33,8 @@ class ApplicationModule {
 
     @Singleton
     @Provides
-    fun database(@ApplicationContext context: Context): ApplicationDatabase = Room.databaseBuilder(context, ApplicationDatabase::class.java, "database")
+    fun database(@ApplicationContext context: Context): ApplicationDatabase =
+        Room.databaseBuilder(context, ApplicationDatabase::class.java, "database")
             .fallbackToDestructiveMigration()
             .build()
 

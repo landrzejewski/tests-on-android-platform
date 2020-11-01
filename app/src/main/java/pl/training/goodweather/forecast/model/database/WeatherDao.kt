@@ -5,19 +5,18 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import androidx.room.Transaction
-import io.reactivex.Maybe
 
 @Dao
 interface WeatherDao {
 
     @Insert(onConflict = REPLACE)
-    fun add(cityDb: CityDb)
+    suspend fun add(cityDb: CityDb)
 
     @Insert
-    fun add(forecastDb: List<ForecastDb>)
+    suspend fun add(forecastDb: List<ForecastDb>)
 
     @Transaction
     @Query("select * from CityDb where name = :cityName")
-    fun findByCityName(cityName: String): Maybe<WeatherDb>
+    suspend fun findByCityName(cityName: String): WeatherDb?
 
 }

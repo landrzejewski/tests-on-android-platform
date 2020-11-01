@@ -4,8 +4,8 @@ import pl.training.goodweather.forecast.model.Weather
 
 sealed class ForecastDetailsResult {
 
-    object Refreshing: ForecastDetailsResult()
+    object Refreshing : ForecastDetailsResult()
 
-    data class Refreshed(val weather: Weather): ForecastDetailsResult()
+    data class Refreshed(val weather: Weather) : ForecastDetailsResult()
 
 }

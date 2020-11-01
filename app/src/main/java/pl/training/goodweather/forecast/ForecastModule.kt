@@ -7,14 +7,12 @@ import dagger.hilt.android.components.ApplicationComponent
 import okhttp3.OkHttpClient
 import pl.training.goodweather.configuration.ApplicationDatabase
 import pl.training.goodweather.forecast.model.api.WeatherProvider
-import pl.training.goodweather.forecast.model.database.InMemoryWeatherRepository
 import pl.training.goodweather.forecast.model.database.RoomWeatherRepository
 import pl.training.goodweather.forecast.model.database.WeatherDao
 import pl.training.goodweather.forecast.model.database.WeatherRepository
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -35,22 +33,9 @@ class ForecastModule {
     @Provides
     fun weatherDao(database: ApplicationDatabase): WeatherDao = database.weatherDao()
 
-    @RoomRepository
     @Singleton
     @Provides
-    fun roomWeatherRepository(weatherDao: WeatherDao): WeatherRepository = RoomWeatherRepository(weatherDao)
-
-    @InMemoryRepository
-    @Singleton
-    @Provides
-    fun inMemoryWeatherRepository(): WeatherRepository = InMemoryWeatherRepository()
+    fun roomWeatherRepository(weatherDao: WeatherDao): WeatherRepository =
+        RoomWeatherRepository(weatherDao)
 
 }
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class RoomRepository
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class InMemoryRepository

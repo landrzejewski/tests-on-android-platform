@@ -4,10 +4,10 @@ import pl.training.goodweather.forecast.model.Weather
 
 sealed class ForecastDetailsViewState {
 
-    object Initial: ForecastDetailsViewState()
+    object Initial : ForecastDetailsViewState()
 
-    object Refreshing: ForecastDetailsViewState()
+    object Refreshing : ForecastDetailsViewState()
 
-    class Refreshed(val weather: Weather): ForecastDetailsViewState()
+    class Refreshed(val weather: Weather) : ForecastDetailsViewState()
 
 }

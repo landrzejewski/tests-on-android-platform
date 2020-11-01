@@ -24,7 +24,11 @@ class ForecastDetailsFragment : Fragment() {
     private val disposableBag = CompositeDisposable()
     private val forecastDetailsViewModel: ForecastDetailsViewModel by activityViewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_forecast_details, container, false)
     }
 
@@ -35,7 +39,13 @@ class ForecastDetailsFragment : Fragment() {
 
     private fun bindViews() {
         val cityName = arguments?.getString("cityName") ?: ""
-        forecastDetailsViewModel.process(Observable.just(ForecastDetailsIntent.RefreshForecast(cityName)))
+        forecastDetailsViewModel.process(
+            Observable.just(
+                ForecastDetailsIntent.RefreshForecast(
+                    cityName
+                )
+            )
+        )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(this::render) { Log.d("###", it.toString()) }
             .addTo(disposableBag)
