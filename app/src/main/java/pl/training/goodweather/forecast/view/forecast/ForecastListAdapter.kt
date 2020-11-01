@@ -1,4 +1,4 @@
-package pl.training.goodweather.forecast.view
+package pl.training.goodweather.forecast.view.forecast
 
 import android.content.Context
 import android.view.LayoutInflater

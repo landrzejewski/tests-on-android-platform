@@ -1,23 +1,24 @@
-package pl.training.goodweather.forecast.view
+package pl.training.goodweather.forecast.view.forecast
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jakewharton.rxbinding2.widget.textChanges
 import dagger.hilt.android.scopes.FragmentScoped
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import pl.training.goodweather.R
-import pl.training.goodweather.common.Logger
-import pl.training.goodweather.forecast.viewmodel.ForecastViewModel
+import pl.training.goodweather.forecast.view.forecast.ForecastViewState.*
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.fragment_forecast.city_name as cityName
 import kotlinx.android.synthetic.main.fragment_forecast.forecast_list as forecastList
 
@@ -25,11 +26,7 @@ import kotlinx.android.synthetic.main.fragment_forecast.forecast_list as forecas
 class ForecastFragment : Fragment() {
 
     private val disposableBag = CompositeDisposable()
-    private val forecastViewModel: ForecastViewModel by activityViewModels()  // by viewModels()
-
-    @Inject
-    lateinit var logger: Logger
-
+    private val forecastViewModel: ForecastViewModel by activityViewModels()
     private val forecastListAdapter = ForecastListAdapter(emptyList())
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -38,7 +35,6 @@ class ForecastFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // forecastViewModel = ViewModelProvider(this).get(ForecastViewModel::class.java)
         initViews()
         bindViews()
     }
@@ -50,21 +46,25 @@ class ForecastFragment : Fragment() {
     }
 
     private fun bindViews() {
-        cityName.textChanges()
-            .map { it.toString().trim() }
-            .filter { it.isNotEmpty() }
-            .debounce(500, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(forecastViewModel::refreshWeather) { logger.log(it.toString()) }
-            .addTo(disposableBag)
-        forecastViewModel.getWeather().observe(viewLifecycleOwner) {
-            cityName.setText(it.cityName)
-            forecastListAdapter.update(it.forecast)
-        }
+        forecastViewModel.process(Observable.merge(listOf(
+            cityName.textChanges()
+                .map { it.toString().trim() }
+                .filter { it.isNotEmpty() }
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .map { ForecastIntent.RefreshForecast(it) })
+            // additional intents sources
+        ))
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(this::render) { Log.d("###", it.toString()) }
+        .addTo(disposableBag)
+    }
+
+    private fun render(viewState: ForecastViewState) {
+       forecastListAdapter.update(viewState.weather?.forecast ?: emptyList())
     }
 
     private fun showForecastDetails() {
-        findNavController().navigate(R.id.action_show_forecast_details)
+        findNavController().navigate(R.id.action_show_forecast_details, bundleOf("cityName" to cityName.text.toString()))
     }
 
     override fun onDestroyView() {
