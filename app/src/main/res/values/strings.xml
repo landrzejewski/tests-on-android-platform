@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">GoodWeather</string>
+    <string name="icon">icon</string>
+    <string name="city_name_hint">Enter city name</string>
+    <string name="unit_symbol">%d°</string>
+    <string name="refreshFailed">Refresh failed</string>
+    <string name="forecast_fragment_label">Forecast</string>
+    <string name="forecast_details_fragment_label">Forecast details</string>
+    <string name="back">Back</string>
+</resources>
