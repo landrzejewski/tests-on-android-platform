@@ -1,6 +1,7 @@
 package pl.training.goodweather.forecast.model
 
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 import pl.training.goodweather.forecast.RoomRepository
 import pl.training.goodweather.forecast.model.api.ApiMappers.toDomainModel
@@ -10,7 +11,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WeatherInteractor @Inject constructor(private val weatherProvider: WeatherProvider, @RoomRepository private val weatherRepository: WeatherRepository) {
+class WeatherInteractor @Inject constructor(private val weatherProvider: WeatherProvider,
+                                            @RoomRepository
+                                            private val weatherRepository: WeatherRepository,
+                                            private val scheduler: Scheduler = Schedulers.io()) {
 
     fun getWeather(cityName: String): Observable<Weather> {
         val cachedWeather = weatherRepository.findByCityName(cityName)
@@ -20,7 +24,7 @@ class WeatherInteractor @Inject constructor(private val weatherProvider: Weather
             .toObservable()
             .flatMap { weatherRepository.add(it).toObservable() }
         return Observable.concat(cachedWeather, refreshedWeather)
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(scheduler)
     }
 
 }

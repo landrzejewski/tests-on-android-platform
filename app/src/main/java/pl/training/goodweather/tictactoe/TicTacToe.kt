@@ -26,8 +26,10 @@ class TicTacToe(crossFields: Set<Int> = mutableSetOf(), circleFields: Set<Int> =
 
     private fun playerFields() = if (player === Player.CROSS) crossFields else circleFields
 
+    private fun isOnBoard(field: Int) = field < BOARD_SIZE + 1
+
     fun makeMove(field: Int): Boolean {
-        if (isTaken(field)) {
+        if (isTaken(field) || !isOnBoard(field)) {
             return false
         }
         playerFields().add(field)
