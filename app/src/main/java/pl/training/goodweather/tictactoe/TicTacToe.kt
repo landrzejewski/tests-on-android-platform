@@ -24,9 +24,7 @@ class TicTacToe(crossFields: Set<Int> = mutableSetOf(), circleFields: Set<Int> =
 
     private fun playerTookWinningSequence() = winningSequences.stream().anyMatch { playerFields().containsAll(it) }
 
-    private fun playerFields(): MutableSet<Int> {
-        return if (player === Player.CROSS) crossFields else circleFields
-    }
+    private fun playerFields() = if (player === Player.CROSS) crossFields else circleFields
 
     fun makeMove(field: Int): Boolean {
         if (isTaken(field)) {
