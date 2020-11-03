@@ -28,9 +28,3 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-
-//test {
-//    useJUnit {
-//        includeCategories = "pl.training.goodweather.common.Slow"
-//    }
-//}
