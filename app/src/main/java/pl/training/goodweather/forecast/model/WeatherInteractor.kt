@@ -22,7 +22,7 @@ class WeatherInteractor @Inject constructor(private val weatherProvider: Weather
         val refreshedWeather = weatherProvider.getWeather(cityName)
             .map(apiMappers::toDomainModel)
             .toObservable()
-            .flatMap { weatherRepository.add(it).toObservable() }
+         //   .flatMap { weatherRepository.add(it).toObservable() }
         return Observable.concat(cachedWeather, refreshedWeather)
             .subscribeOn(scheduler)
     }
