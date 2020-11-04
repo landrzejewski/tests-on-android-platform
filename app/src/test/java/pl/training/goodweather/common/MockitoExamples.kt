@@ -3,6 +3,7 @@ package pl.training.goodweather.common
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -24,6 +25,7 @@ class MockitoExamples {
         MockitoAnnotations.openMocks(MockitoExamples::class)
     }
 
+    @Ignore
     @Test
     fun verifyTest() {
         //val mockedList = mock<MutableList<Int>>()
