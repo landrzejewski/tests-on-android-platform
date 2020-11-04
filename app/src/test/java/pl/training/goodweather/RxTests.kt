@@ -1,13 +1,9 @@
-package pl.training.goodweather.common
+package pl.training.goodweather
 
-import android.database.DatabaseUtils
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
-import io.reactivex.subscribers.TestSubscriber
-import org.junit.Assert
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test

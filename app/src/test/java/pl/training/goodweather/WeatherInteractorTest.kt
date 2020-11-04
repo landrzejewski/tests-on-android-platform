@@ -1,4 +1,4 @@
-package pl.training.goodweather.common
+package pl.training.goodweather
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
