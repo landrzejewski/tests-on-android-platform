@@ -4,7 +4,7 @@ import pl.training.goodweather.forecast.model.Forecast
 import pl.training.goodweather.forecast.model.Weather
 import java.util.*
 
-object ApiMappers {
+class ApiMappers {
 
     fun toDomainModel(weatherTo: WeatherTo) = with(weatherTo) {
         Weather(city.id, city.name.toLowerCase(Locale.ROOT), list.map { toDomainModel(it) })

@@ -4,8 +4,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import pl.training.goodweather.configuration.ApplicationDatabase
+import pl.training.goodweather.forecast.model.api.ApiMappers
 import pl.training.goodweather.forecast.model.api.WeatherProvider
 import pl.training.goodweather.forecast.model.database.InMemoryWeatherRepository
 import pl.training.goodweather.forecast.model.database.RoomWeatherRepository
@@ -44,6 +46,14 @@ class ForecastModule {
     @Singleton
     @Provides
     fun inMemoryWeatherRepository(): WeatherRepository = InMemoryWeatherRepository()
+
+    @Singleton
+    @Provides
+    fun scheduler() = Schedulers.io()
+
+    @Singleton
+    @Provides
+    fun apiMappers() = ApiMappers()
 
 }
 
