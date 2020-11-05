@@ -34,7 +34,8 @@ class ApplicationModule {
     @Singleton
     @Provides
     fun database(@ApplicationContext context: Context): ApplicationDatabase = Room.databaseBuilder(context, ApplicationDatabase::class.java, "database")
-            .fallbackToDestructiveMigration()
-            .build()
+            //.fallbackToDestructiveMigration()
+        .addMigrations(MIGRATION_1_2)
+        .build()
 
 }

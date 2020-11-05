@@ -18,6 +18,7 @@ open class DatabaseTest {
 
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
+    val databaseName = "database"
 
     lateinit var database: ApplicationDatabase
 

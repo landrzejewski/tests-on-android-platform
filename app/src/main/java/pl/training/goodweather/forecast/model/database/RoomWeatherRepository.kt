@@ -2,7 +2,6 @@ package pl.training.goodweather.forecast.model.database
 
 import io.reactivex.Maybe
 import io.reactivex.Scheduler
-import io.reactivex.schedulers.Schedulers
 import pl.training.goodweather.forecast.model.Weather
 import pl.training.goodweather.forecast.model.database.DatabaseMappers.toDatabaseModel
 import pl.training.goodweather.forecast.model.database.DatabaseMappers.toDomainModel
