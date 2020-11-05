@@ -21,8 +21,6 @@ class RxTests {
             .assertComplete()
     }
 
-
-
     @Test
     fun `test amb`() {
         val scheduler = TestScheduler()

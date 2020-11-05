@@ -1,22 +1,34 @@
 package pl.training.goodweather
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import pl.training.goodweather.forecast.model.Forecast
 import pl.training.goodweather.forecast.model.Weather
 import pl.training.goodweather.forecast.model.WeatherInteractor
 import pl.training.goodweather.forecast.model.api.*
 import pl.training.goodweather.forecast.model.database.WeatherRepository
-import java.lang.IllegalArgumentException
 import java.util.*
 
+
 class WeatherInteractorTest {
+
+    //@§get:Rule
+    //val instantExecutorRule = InstantTaskExecutorRule()
+
+    // swaps the background executor used by the Architecture Components with a
+    // different one which executes each task synchronously.
+
+  // https://github.com/jraska/livedata-testing
+
 
     lateinit var weatherProvider: WeatherProvider
     lateinit var weatherRepository: WeatherRepository
@@ -26,16 +38,33 @@ class WeatherInteractorTest {
     private val cityName = "warsaw"
     private val weatherFromDb = Weather(1, cityName, listOf(Forecast(2, Date(), "", 0, 0, "")))
     private val weatherFromBackend = Weather(1, cityName, listOf(Forecast(2, Date(), "", 0, 0, "")))
-    private val weatherTo = WeatherTo(CityTo(1, cityName, CoordinatesTo(0F,0F), ""), listOf(
-        ForecastTo(1L, TemperatureTo(1F, 1F, 1F, 1F, 1F, 1F), 1F, 1, listOf(SummaryTo(1L, "", "", "")), 1F, 1, 1, 1F))
+    private val weatherTo = WeatherTo(
+        CityTo(1, cityName, CoordinatesTo(0F, 0F), ""), listOf(
+            ForecastTo(
+                1L, TemperatureTo(1F, 1F, 1F, 1F, 1F, 1F), 1F, 1, listOf(
+                    SummaryTo(
+                        1L,
+                        "",
+                        "",
+                        ""
+                    )
+                ), 1F, 1, 1, 1F
+            )
+        )
     )
 
     @Before
     fun setup() {
+        RxJavaPlugins.setIoSchedulerHandler{Schedulers.trampoline()}
         weatherProvider = mock()
         weatherRepository = mock()
         apiMappers = mock()
-        weatherInteractor = WeatherInteractor(weatherProvider, weatherRepository, apiMappers, Schedulers.trampoline())
+        weatherInteractor = WeatherInteractor(
+            weatherProvider,
+            weatherRepository,
+            apiMappers,
+            Schedulers.io()
+        )
 
         whenever(weatherRepository.add(weatherFromBackend)).thenReturn(Maybe.just(weatherFromBackend))
     }
@@ -75,7 +104,11 @@ class WeatherInteractorTest {
     fun `should not return result when city name is invalid`() {
         val invalidCityName = "x"
         whenever(weatherRepository.findByCityName(invalidCityName)).thenReturn(Maybe.empty())
-        whenever(weatherProvider.getWeather(invalidCityName)).thenReturn(Single.error(IllegalArgumentException()))
+        whenever(weatherProvider.getWeather(invalidCityName)).thenReturn(
+            Single.error(
+                IllegalArgumentException()
+            )
+        )
         whenever(apiMappers.toDomainModel(weatherTo)).thenThrow(IllegalArgumentException::class.java)
         weatherInteractor.getWeather(invalidCityName).test()
             .assertValueCount(0)

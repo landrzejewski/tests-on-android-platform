@@ -6,7 +6,7 @@ import pl.training.goodweather.forecast.model.database.CityDb
 import pl.training.goodweather.forecast.model.database.ForecastDb
 import pl.training.goodweather.forecast.model.database.WeatherDao
 
-@Database(entities = [CityDb::class, ForecastDb::class], version = 1, exportSchema = false)
+@Database(entities = [CityDb::class, ForecastDb::class], version = 1, exportSchema = true)
 abstract class ApplicationDatabase : RoomDatabase() {
 
     abstract fun weatherDao(): WeatherDao
