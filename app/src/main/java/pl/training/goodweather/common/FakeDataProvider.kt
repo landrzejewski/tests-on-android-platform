@@ -25,4 +25,6 @@ object FakeDataProvider {
         ForecastDb(null, date.time, description, minTemperature, maxTemperature, iconUrl, cityId)
     }
 
+    fun getForecastList() = listOf(FakeDataProvider.toForecastDb(FakeDataProvider.getForecast(), getCityDb().id))
+
 }
